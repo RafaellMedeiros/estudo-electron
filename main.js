@@ -1,13 +1,13 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu, globalShortcut } from 'electron'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-console.log(process.platform);
 
+let mainWindow
 
 const createMainWindow = () => {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     title: 'Estudo Electron',
@@ -17,7 +17,32 @@ const createMainWindow = () => {
     },
   })
 
-  win.loadFile('./app/index.html')
+  mainWindow.loadFile('./app/index.html')
 }
 
-app.on('ready', createMainWindow)
+app.on('ready', () => {
+  createMainWindow()
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Teste',
+      submenu: [
+        {
+          label: 'Exit',
+          click: () => {
+            app.quit()
+          }
+        }
+      ]
+    }
+  ])
+  Menu.setApplicationMenu(menu)
+
+  globalShortcut.register('CommandOrControl+i', () => {
+    mainWindow.toggleDevTools()
+  })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
+})
