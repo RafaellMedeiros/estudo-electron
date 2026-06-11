@@ -1,48 +1,81 @@
-import { app, BrowserWindow, Menu, globalShortcut } from 'electron'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { app, BrowserWindow, Menu, globalShortcut } from "electron";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { config } from "dotenv";
+config();
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-let mainWindow
+const isDev = process.env.NODE_ENV;
+console.log(isDev);
+
+let mainWindow;
+let aboutWindow;
 
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    title: 'Estudo Electron',
+    title: "Estudo Electron",
     icon: `${__dirname}/app/assets/icon.png`,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     },
-  })
+  });
 
-  mainWindow.loadFile('./app/index.html')
-}
+  mainWindow.loadFile("./app/index.html");
+};
 
-app.on('ready', () => {
-  createMainWindow()
+const aboutMainWindow = () => {
+  aboutWindow = new BrowserWindow({
+    width: 300,
+    height: 300,
+    title: "Estudo Electron",
+    icon: `${__dirname}/app/assets/icon.png`,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    frame: false
+  });
+
+  aboutWindow.loadFile("./app/pages/About/index.html");
+};
+
+app.on("ready", () => {
+  createMainWindow();
 
   const menu = Menu.buildFromTemplate([
-    {
-      label: 'Teste',
-      submenu: [
-        {
-          label: 'Exit',
-          click: () => {
-            app.quit()
-          }
-        }
-      ]
-    }
-  ])
-  Menu.setApplicationMenu(menu)
+    ...(isDev
+      ? [ 
+          {
+            label: "Dev", 
+            submenu: [
+              {
+                label: "DevTools",
+                role: "toggleDevTools",
+              },
+              {
+                label: "reload",
+                role: "reload"
+              }
+            ],
+          },
+        ]
+      : []),
+    ...[
+      {
+        label: 'Sobre',
+        click:  aboutMainWindow
+      }
+    ]
+  ]);
+  Menu.setApplicationMenu(menu);
 
-  globalShortcut.register('CommandOrControl+i', () => {
-    mainWindow.toggleDevTools()
-  })
+  // globalShortcut.register('CommandOrControl+i', () => {
+  //   mainWindow.toggleDevTools()
+  // })
 
-  mainWindow.on('closed', () => {
-    mainWindow = null
-  })
-})
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+});
