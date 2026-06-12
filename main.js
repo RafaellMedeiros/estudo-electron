@@ -46,7 +46,9 @@ const aboutMainWindow = () => {
 
 ipcMain.on('close-about-window', (event, option) => {
   console.info(option)
-  aboutWindow.close();
+  // aboutWindow.close();
+
+  aboutWindow.webContents.send('about-window-closed')
 });
 ipcMain.on('teste-event', (event, option) => {
   console.info(option)
