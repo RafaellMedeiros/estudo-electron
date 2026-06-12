@@ -8,6 +8,8 @@ body {
   height: 100vh;
   width: 100vw;
 
+  -webkit-app-region: drag;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,6 +23,7 @@ body {
   right: 10px;
   cursor: pointer;
   transition: transform 0.2s;
+  -webkit-app-region: no-drag;
 }
 
 .quit-content:hover {

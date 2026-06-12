@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, globalShortcut } from "electron";
+import { app, BrowserWindow, Menu, globalShortcut, ipcMain } from "electron";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { config } from "dotenv";
@@ -20,6 +20,7 @@ const createMainWindow = () => {
     icon: `${__dirname}/app/assets/icon.png`,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
@@ -34,12 +35,22 @@ const aboutMainWindow = () => {
     icon: `${__dirname}/app/assets/icon.png`,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
+    resizable: false,
     frame: false
   });
 
   aboutWindow.loadFile("./app/pages/About/index.html");
 };
+
+ipcMain.on('close-about-window', (event, option) => {
+  console.info(option)
+  aboutWindow.close();
+});
+ipcMain.on('teste-event', (event, option) => {
+  console.info(option)
+});
 
 app.on("ready", () => {
   createMainWindow();
@@ -70,10 +81,6 @@ app.on("ready", () => {
     ]
   ]);
   Menu.setApplicationMenu(menu);
-
-  // globalShortcut.register('CommandOrControl+i', () => {
-  //   mainWindow.toggleDevTools()
-  // })
 
   mainWindow.on("closed", () => {
     mainWindow = null;
